@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>歩数ゲーム</title>
+    <title>アースム</title>
     <style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -18,32 +18,28 @@
             background-size: cover;
             background-position: center;
             color: #333;
+            text-align: center;
         }
         .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 40px;
             border-radius: 20px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            width: 90%;
+            width: 80%;
             max-width: 600px;
-            position: relative;
         }
         h1 {
             color: #2a9d8f;
+            font-size: 48px;
         }
-        input[type="number"], input[type="text"] {
-            padding: 10px;
-            font-size: 16px;
-            width: calc(100% - 24px);
-            margin: 10px 0;
-            border: 2px solid #007bff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        p {
+            font-size: 18px;
+            color: #264653;
+            margin-bottom: 20px;
         }
         button {
             padding: 10px 20px;
-            font-size: 16px;
+            font-size: 20px;
             color: #fff;
             background-color: #e76f51;
             border: none;
@@ -51,162 +47,62 @@
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            margin: 10px;
         }
         button:hover {
             background-color: #d1495b;
             transform: scale(1.1);
         }
-        .result {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #264653;
+        .toc {
+            margin-bottom: 30px;
         }
-        .progress-bar {
-            margin-top: 20px;
-            background-color: #dcdcdc;
-            border-radius: 20px;
-            overflow: hidden;
-            height: 40px;
-            position: relative;
-            width: 100%;
+        .toc ul {
+            list-style-type: none;
+            padding: 0;
         }
-        .progress {
-            height: 100%;
-            background-color: #dcdcdc;
-            width: 100%;
-        }
-        .icon {
-            font-size: 60px;
+        .toc li {
             margin-bottom: 10px;
-            color: #f4a261;
         }
-        .goal-message {
-            color: #e76f51;
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 20px;
+        .toc a {
+            text-decoration: none;
+            color: #2a9d8f;
+            font-size: 18px;
         }
-        .character {
-            position: absolute;
-            bottom: 2px;
-            left: 0;
-            font-size: 30px;
-            transition: left 1.0s ease-out;
-            color: #ff6347;
-            transform: scaleX(-1);
-        }
-        .new-progress-bar {
-            margin-top: 20px;
-            background-color: #dcdcdc;
-            border-radius: 20px;
-            height: 20px;
-            width: 100%;
-        }
-        .new-progress {
-            height: 100%;
-            background-color: #2a9d8f;
-            width: 0;
-            transition: width 0.5s ease-in-out;
+        .toc a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="icon">🌍</div>
-        <h1>歩数ゲーム</h1>
+        <h1><div class="icon">アースム🌍</div></h1>
+        <p>地球温暖化抑制のために、楽しくポイントをためましょう！</p>
         
-        <!-- 目標設定のフォーム -->
-        <p>目標歩数を設定してください:</p>
-        <input type="number" id="goalInput" placeholder="目標歩数 (例: 10000)" required>
-        <button onclick="setGoal()">目標設定</button>
-
-        <p>今日の歩数を入力してください:</p>
-        <input type="number" id="steps" placeholder="例: 5000" required>
-        <button onclick="updateSteps()">送信</button>
-
-        <div class="result" id="result">
-            <p>累計歩数: 0 歩</p>
-            <p>累計ポイント: 0 ポイント</p>
-            <p>削減したCO₂: 0 g</p>
+        <!-- 目次 -->
+        <div class="toc">
+            <h2>目次</h2>
+            <ul>
+                <li><a href="index.html">歩数ゲーム</a></li>
+                <li><a href="other_game.html">他のゲーム</a></li>
+                <li><a href="about.html">アースムについて</a></li>
+                <li><a href="contact.html">お問い合わせ</a></li>
+            </ul>
         </div>
 
-        <div class="progress-bar">
-            <div class="progress"></div>
-            <div id="character" class="character">🚶‍♂️</div>
-        </div>
-
-        <div class="new-progress-bar">
-            <div class="new-progress" id="new-progress"></div>
-        </div>
-
-        <div class="goal-message" id="goal-message"></div>
+        <button onclick="startStepGame()">歩数ゲームを始める</button>
+        <button onclick="startOtherGame()">他のゲームを始める</button>
     </div>
 
-<script>
-    let totalSteps = 0;
-    let totalPoints = 0;
-    let totalCO2Saved = 0;
-    let goalSteps = 10000;  // デフォルト目標歩数
-    const co2PerStep = 147 / 1400;
-
-    // ページが読み込まれた時に目標を設定
-    document.addEventListener('DOMContentLoaded', function () {
-        const savedGoal = localStorage.getItem('goalSteps');
-        if (savedGoal) {
-            goalSteps = parseInt(savedGoal);
-        }
-        // 目標歩数を画面に表示
-        document.getElementById('goal-message').innerText = `目標歩数: ${goalSteps} 歩`;
-    });
-
-    // 目標設定を保存する関数
-    function setGoal() {
-        const goalInput = document.getElementById('goalInput').value;
-        if (goalInput && goalInput > 0) {
-            goalSteps = parseInt(goalInput);
-            localStorage.setItem('goalSteps', goalSteps);
-            document.getElementById('goal-message').innerText = `目標歩数: ${goalSteps} 歩`;
-            /*alert("目標歩数が設定されました！");*/
-        } else {
-            alert("正しい目標歩数を入力してください！");
-        }
-    }
-
-    // 歩数を更新する関数
-    function updateSteps() {
-        const stepsToday = parseInt(document.getElementById('steps').value);
-
-        if (isNaN(stepsToday) || stepsToday <= 0) {
-            alert("有効な歩数を入力してください！");
-            return;
+    <script>
+        // 歩数ゲームを開始する関数
+        function startStepGame() {
+            window.location.href = "index.html"; // 歩数ゲームページに遷移
         }
 
-        totalSteps += stepsToday;
-        totalPoints += Math.floor(stepsToday / 100);
-        totalCO2Saved += stepsToday * co2PerStep;
-
-        document.getElementById('result').innerHTML = `
-            <p>累計歩数: ${totalSteps} 歩</p>
-            <p>累計ポイント: ${totalPoints} ポイント</p>
-            <p>削減したCO₂: ${totalCO2Saved.toFixed(2)} g</p>
-        `;
-
-        const progress = Math.min((totalSteps / goalSteps) * 100, 100);
-        const character = document.getElementById('character');
-        const progressBarWidth = document.querySelector('.progress-bar').offsetWidth;
-        const characterPosition = (progress / 100) * progressBarWidth;
-        character.style.left = characterPosition + 'px';
-
-        const newProgressBar = document.getElementById('new-progress');
-        newProgressBar.style.width = progress + '%';
-
-        if (totalSteps >= goalSteps) {
-            document.getElementById('goal-message').innerText = "おめでとう！今日の目標を達成したよ！";
+        // 他のゲームを開始する関数
+        function startOtherGame() {
+            window.location.href = "other_game.html"; // 他のゲームページに遷移
         }
-
-        document.getElementById('steps').value = '';
-    }
-</script>
-
+    </script>
 </body>
 </html>
