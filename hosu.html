@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歩数ゲーム</title>
+    <style>
+        /* 既存のスタイル */
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('https://source.unsplash.com/1600x900/?nature,trail');
+            background-size: cover;
+            background-position: center;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+        h1 {
+            color: #2a9d8f;
+        }
+        input[type="number"] {
+            padding: 10px;
+            font-size: 16px;
+            width: calc(100% - 24px);
+            margin: 10px 0;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #e76f51;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            background-color: #d1495b;
+            transform: scale(1.1);
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #264653;
+        }
+        .progress-bar {
+            margin-top: 20px;
+            background-color: #dcdcdc;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 40px;
+            position: relative;
+            width: 100%;
+        }
+        .progress {
+            height: 100%;
+            background-color: #2a9d8f;
+            width: 0;
+            transition: width 0.5s ease-in-out;
+        }
+        .character {
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            font-size: 30px;
+            transition: left 1.0s ease-out;
+            color: #ff6347;
+            transform: scaleX(-1);
+        }
+        .goal-message {
+            color: #e76f51;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>歩数ゲーム</h1>
+        
+        <p>目標歩数を設定してください:</p>
+        <input type="number" id="goalInput" placeholder="目標歩数 (例: 10000)" required>
+        <button onclick="setGoal()">目標設定</button>
+
+        <p>今日の歩数を入力してください:</p>
+        <input type="number" id="steps" placeholder="例: 5000" required>
+        <button onclick="updateSteps()">送信</button>
+
+        <div class="result" id="result">
+            <p>今回の歩数: 0 歩</p>
+            <p>今回獲得したポイント: 0 ポイント</p>
+            <p>今回削減したCO₂: 0 g</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress" id="progress-bar"></div>
+            <div id="character" class="character">🚶‍♂️</div>
+        </div>
+
+        <div class="goal-message" id="goal-message"></div>
+
+        <button onclick="goBack()">戻る</button>
+    </div>
+
+    <script>
+        let dailySteps = 0; // 今日の歩数はリセットされる
+        let totalPoints = parseInt(localStorage.getItem('totalPoints') || 0); // 累計ポイントは保存
+        let goalSteps = 10000; // デフォルト目標歩数
+        const co2PerStep = 147 / 1400;
+
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function () {
+            const savedGoal = localStorage.getItem('goalSteps');
+            if (savedGoal) goalSteps = parseInt(savedGoal);
+
+            document.getElementById('goal-message').innerText = `目標歩数: ${goalSteps} 歩`;
+            document.getElementById('result').innerHTML = `
+                <p>今回の歩数: ${dailySteps} 歩</p>
+                <p>今回獲得したポイント: 0 ポイント</p>
+                <p>今回削減したCO₂: 0 g</p>
+            `;
+        });
+
+        function setGoal() {
+            const goalInput = document.getElementById('goalInput').value;
+            if (goalInput && goalInput > 0) {
+                goalSteps = parseInt(goalInput);
+                localStorage.setItem('goalSteps', goalSteps);
+                document.getElementById('goal-message').innerText = `目標歩数: ${goalSteps} 歩`;
+                alert("目標歩数が設定されました！");
+            } else {
+                alert("正しい目標歩数を入力してください！");
+            }
+        }
+
+        function updateSteps() {
+            const stepsToday = parseInt(document.getElementById('steps').value);
+            if (isNaN(stepsToday) || stepsToday <= 0) {
+                alert("有効な歩数を入力してください！");
+                return;
+            }
+
+            dailySteps += stepsToday;
+            const pointsEarnedThisTime = Math.floor(stepsToday / 100); // 今回獲得ポイント
+            totalPoints += pointsEarnedThisTime;
+            localStorage.setItem('totalPoints', totalPoints);
+
+            const co2Saved = dailySteps * co2PerStep;
+            const progress = Math.min((dailySteps / goalSteps) * 100, 100);
+
+            document.getElementById('progress-bar').style.width = progress + '%';
+            document.getElementById('character').style.left = (progress / 100) * document.querySelector('.progress-bar').offsetWidth + 'px';
+
+            document.getElementById('result').innerHTML = `
+                <p>今回の歩数: ${dailySteps} 歩</p>
+                <p>今回獲得したポイント: ${pointsEarnedThisTime} ポイント</p>
+                <p>今回削減したCO₂: ${co2Saved.toFixed(2)} g</p>
+            `;
+
+            document.getElementById('steps').value = '';
+        }
+
+        function goBack() {
+            window.location.href = "index.html"; // トップページに戻る
+        }
+    </script>
+</body>
+</html>

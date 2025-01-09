@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ポイント確認</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('https://source.unsplash.com/1600x900/?nature,trail');
+            background-size: cover;
+            background-position: center;
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            width: 80%;
+            max-width: 600px;
+        }
+        h1 {
+            color: #2a9d8f;
+            font-size: 36px;
+        }
+        p {
+            font-size: 20px;
+            color: #264653;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #e76f51;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            margin: 20px;
+        }
+        button:hover {
+            background-color: #d1495b;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ポイント確認</h1>
+        <p id="points-display">ポイントを読み込んでいます...</p>
+        <button onclick="goBack()">戻る</button>
+    </div>
+
+    <script>
+        // ページロード時にポイントを表示
+        document.addEventListener('DOMContentLoaded', function () {
+            const totalPoints = localStorage.getItem('totalPoints') || 0;
+            document.getElementById('points-display').innerText = `累計ポイント: ${totalPoints} ポイント`;
+        });
+
+        // 戻るボタンの動作
+        function goBack() {
+            window.location.href = "index.html"; // トップページに戻る
+        }
+    </script>
+</body>
+</html>

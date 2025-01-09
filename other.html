@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ポイントゲット</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('https://source.unsplash.com/1600x900/?nature,green');
+            background-size: cover;
+            background-position: center;
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            width: 80%;
+            max-width: 600px;
+        }
+        h1 {
+            color: #2a9d8f;
+            font-size: 36px;
+        }
+        p {
+            font-size: 20px;
+            color: #264653;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #e76f51;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #d1495b;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ポイントゲット！</h1>
+        <p>以下の行動を実施したらボタンを押してポイントを獲得しましょう！</p>
+
+        <button onclick="addPoints('こまめに電気を消した', 10)">こまめに電気を消した (+10ポイント)</button>
+        <button onclick="addPoints('マイバックを使用した', 15)">マイバックを使用した (+15ポイント)</button>
+        <button onclick="addPoints('ごみの分別を正しくした', 20)">ごみの分別を正しくした (+20ポイント)</button>
+        <button onclick="addPoints('公共交通機関や自転車等で移動した', 30)">公共交通機関や自転車等で移動した (+30ポイント)</button>
+
+        <p id="result-message" style="margin-top: 20px; font-size: 18px; color: #2a9d8f;"></p>
+
+        <button onclick="goBack()">戻る</button>
+    </div>
+
+    <script>
+        // ポイントを追加する関数
+        function addPoints(action, points) {
+            let totalPoints = parseInt(localStorage.getItem('totalPoints') || 0);
+            totalPoints += points;
+            localStorage.setItem('totalPoints', totalPoints);
+
+            document.getElementById('result-message').innerText = 
+                `${action} の実施で ${points} ポイントを獲得しました！`;
+        }
+
+        // トップページに戻る関数
+        function goBack() {
+            window.location.href = "index.html"; // トップページに戻る
+        }
+    </script>
+</body>
+</html>
